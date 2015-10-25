@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Poop Fiction Companion</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="lbl_tiny_button">1-2 min</string>
+    <string name="tiny_story_url">http://readpoopfiction.com/story.php?length=1</string>
+    <string name="lbl_short_button">2-3 min</string>
+    <string name="short_story_url">http://readpoopfiction.com/story.php?length=2</string>
+    <string name="lbl_medium_button">3-4 min</string>
+    <string name="meduium_story_url">http://readpoopfiction.com/story.php?length=3</string>
+    <string name="lbl_long_button">4+ min</string>
+    <string name="long_story_url">http://readpoopfiction.com/story.php?length=4</string>
+    <string name="getting_started">Click a button above to read.</string>
+</resources>
