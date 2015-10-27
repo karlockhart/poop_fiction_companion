@@ -6,9 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.Html;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,7 +18,6 @@ import android.widget.TextView;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -32,6 +31,7 @@ public class PoopCompanion extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_poop_companion);
 
+        // Broadcast receiver to get story content.
         LocalBroadcastManager.getInstance(this).registerReceiver(
                 storyReceiver, new IntentFilter("storyUpdated"));
     }
@@ -77,7 +77,7 @@ public class PoopCompanion extends AppCompatActivity {
     public void fetchStory(String source) {
         try {
             StoryFetcher fetcher = new StoryFetcher();
-            fetcher.loadApplication(this);
+            fetcher.setContext(this);
             fetcher.execute(new URL(source));
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -95,11 +95,11 @@ public class PoopCompanion extends AppCompatActivity {
     private class StoryFetcher extends AsyncTask<URL, Long, String> {
 
         private Context context;
-        private ProgressDialog waitSpinner;
+        private ProgressDialog progressDialog;
 
-        public void loadApplication(Context context) {
+        public void setContext(Context context) {
+            // Set the calling activity context, not the cleanest way but reasonable.
             this.context = context;
-            waitSpinner = new ProgressDialog(this.context);
         }
 
         @Override
@@ -121,22 +121,29 @@ public class PoopCompanion extends AppCompatActivity {
         }
 
         @Override
-        protected void onProgressUpdate(Long... values) {
-            super.onProgressUpdate(values);
-            // Only purpose of this method is to show our wait spinner, we dont
-            // (and can't) show detailed progress updates
-            waitSpinner = ProgressDialog.show(context, "Please Wait ...", "Initializing the application ...", true);
+        protected void onPreExecute() {
+            // Show the progress dialog while the download is in progress.
+            progressDialog = new ProgressDialog(this.context);
+            progressDialog.setMessage("Fetching story ...");
+            progressDialog.setIndeterminate(false);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
         }
 
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            waitSpinner.cancel();
+
+            // Done fetching, get rid of the dialog.
+            progressDialog.dismiss();
         }
 
         private void sendStoryUpdatedMessageToActivity(String story){
+            // Create an intent to transfer the story contents.
             Intent intent = new Intent("storyUpdated");
             intent.putExtra("content", story);
+
+            // Send the message.
             LocalBroadcastManager.getInstance(this.context).sendBroadcast(intent);
         }
     }
