@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.safety.Whitelist;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
@@ -124,7 +125,7 @@ public class PoopCompanion extends AppCompatActivity {
         protected void onPreExecute() {
             // Show the progress dialog while the download is in progress.
             progressDialog = new ProgressDialog(this.context);
-            progressDialog.setMessage("Fetching story ...");
+            progressDialog.setMessage("Finding you a story ...");
             progressDialog.setIndeterminate(false);
             progressDialog.setCancelable(false);
             progressDialog.show();
@@ -139,6 +140,12 @@ public class PoopCompanion extends AppCompatActivity {
         }
 
         private void sendStoryUpdatedMessageToActivity(String story){
+            // Remove links.
+            story = Jsoup.clean(story, Whitelist.relaxed().removeTags("a"));
+
+            // Add attribution.
+            story = story + "<p>Stories courtesy of gutenberg.org via readpoopfiction.com</p>";
+
             // Create an intent to transfer the story contents.
             Intent intent = new Intent("storyUpdated");
             intent.putExtra("content", story);

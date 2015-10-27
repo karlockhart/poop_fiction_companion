@@ -10,5 +10,5 @@
     <string name="meduium_story_url">http://readpoopfiction.com/story.php?length=3</string>
     <string name="lbl_long_button">4+ min</string>
     <string name="long_story_url">http://readpoopfiction.com/story.php?length=4</string>
-    <string name="getting_started">Click a button above to read.</string>
+    <string name="getting_started">Something to read from readpoopfiction.com</string>
 </resources>
